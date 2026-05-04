@@ -738,6 +738,9 @@ select.form-input{cursor:pointer}
 </div>
 
 <script>
+// ==================== GOOGLE SHEETS CLOUD DB ====================
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzXKBWVKpHR69_H4VcIzn_2UcY7ZHNh5LPxte4x_JOMh6AeSO-pM5eqBzKkqzrPyNj7/exec';
+
 // ==================== DRIVE VIA APPS SCRIPT (sin auth requerida) ====================
 async function deleteFileFromDrive(driveId) {
   if (!driveId) return;
@@ -748,9 +751,6 @@ async function deleteFileFromDrive(driveId) {
     console.error('Error eliminando de Drive:', e);
   }
 }
-
-// ==================== GOOGLE SHEETS CLOUD DB ====================
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxp84MEMxaJUYxrkiE_NMyrZ-gZROpvGtkRNfZWieo1PZgQruKoLozfhDlD6hkp0XEN/exec';
 
 const DEFAULT_STORE = {
   initialized: true,
@@ -984,8 +984,17 @@ function uploadFiles(files){
       // Upload to Drive via Apps Script (no auth needed)
       try {
         const base64 = e.target.result.split(',')[1];
-        const url = `${SHEETS_URL}?action=uploadFile&name=${encodeURIComponent(file.name)}&mimeType=${encodeURIComponent(file.type||'application/octet-stream')}&data=${encodeURIComponent(base64)}`;
-        const resp = await fetch(url);
+        const params = new URLSearchParams({
+          action: 'uploadFile',
+          name: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          data: base64
+        });
+        const resp = await fetch(SHEETS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
         const result = await resp.json();
         if(result.ok){
           const s2=getStore();
@@ -1375,7 +1384,7 @@ function openShareFile(id){
     <div style="margin-top:16px">
       <div class="form-label">Enlace de Drive</div>
       <div style="display:flex;gap:8px">
-        <input class="form-input" id="share-link-input" value="${f.driveLink||'[Sin enlace Drive — conecta Drive para obtener uno]'}" readonly style="flex:1">
+        <input class="form-input" id="share-link-input" value="${f.driveLink||'Subiendo a Drive...'}" readonly style="flex:1">
         <button class="btn btn-secondary" onclick="
           const v=document.getElementById('share-link-input').value;
           if(v.startsWith('http')){navigator.clipboard.writeText(v);toast('Enlace copiado','success');}
