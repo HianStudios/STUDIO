@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HianStudios Workspace</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+<style>
+:root {
+  --navy: #0a1628;
+  --navy2: #0f2040;
+  --navy3: #162d55;
+  --navy4: #1e3c6e;
+  --blue: #1a56db;
+  --blue-light: #3b82f6;
+  --orange: #f97316;
+  --orange2: #ea6c0a;
+  --orange-glow: rgba(249,115,22,0.15);
+  --red: #dc2626;
+  --gold: #f59e0b;
+  --surface: #0d1f3c;
+  --surface2: #112244;
+  --surface3: #162d55;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0f4ff;
+  --text2: #a8b8d8;
+  --text3: #6b7fa8;
+  --success: #10b981;
+  --success-bg: rgba(16,185,129,0.12);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245,158,11,0.12);
+  --danger: #ef4444;
+  --danger-bg: rgba(239,68,68,0.12);
+  --info: #3b82f6;
+  --info-bg: rgba(59,130,246,0.12);
+  --radius: 10px;
+  --radius2: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--navy4);border-radius:3px}
+
+/* ====== AUTH SCREEN ====== */
+#auth-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:1000;background-image:radial-gradient(ellipse at 20% 50%, rgba(26,86,219,0.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(249,115,22,0.08) 0%, transparent 50%)}
+.auth-card{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:48px;width:420px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,0.6)}
+.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center}
+.auth-logo svg{width:52px;height:52px}
+.auth-logo-text{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.auth-logo-text span{color:var(--orange)}
+.auth-title{font-size:24px;font-weight:700;margin-bottom:6px;text-align:center}
+.auth-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:32px}
+.auth-field{margin-bottom:16px}
+.auth-field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.auth-field input{width:100%;background:var(--navy3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 16px;color:var(--text);font-family:'Sora',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.auth-field input:focus{border-color:var(--orange)}
+.auth-btn{width:100%;background:var(--orange);border:none;border-radius:var(--radius);padding:13px;color:#fff;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;margin-top:8px}
+.auth-btn:hover{background:var(--orange2)}
+.auth-btn:active{transform:scale(0.98)}
+.auth-error{background:var(--danger-bg);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:#fca5a5;margin-bottom:16px;display:none}
+.auth-hint{font-size:12px;color:var(--text3);text-align:center;margin-top:20px}
+.auth-hint a{color:var(--orange);text-decoration:none;cursor:pointer}
+
+/* ====== MAIN APP ====== */
+#app{display:none;height:100vh;flex-direction:column}
+
+/* TOP BAR */
+.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0;position:relative;z-index:100}
+.topbar-logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;letter-spacing:-0.3px;flex-shrink:0}
+.topbar-logo span{color:var(--orange)}
+.topbar-logo svg{width:32px;height:32px}
+.topbar-search{flex:1;max-width:400px;position:relative}
+.topbar-search input{width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:8px 16px 8px 38px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.topbar-search input:focus{border-color:var(--blue-light)}
+.topbar-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text3)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.topbar-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:background .2s}
+.topbar-user:hover{background:var(--navy3)}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.avatar-orange{background:linear-gradient(135deg,var(--orange),#f59e0b);color:#fff}
+.avatar-blue{background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff}
+.topbar-username{font-size:13px;font-weight:600}
+.topbar-role{font-size:11px;color:var(--orange);font-weight:500}
+.icon-btn{background:none;border:none;color:var(--text2);cursor:pointer;padding:7px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
+.icon-btn:hover{background:var(--navy3);color:var(--text)}
+.notif-dot{position:relative}
+.notif-dot::after{content:'';position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--orange);border-radius:50%;border:2px solid var(--surface)}
+
+/* MAIN LAYOUT */
+.main-layout{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-section{padding:20px 12px 8px}
+.sidebar-section-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;user-select:none}
+.nav-item:hover{background:var(--navy3);color:var(--text)}
+.nav-item.active{background:var(--orange-glow);color:var(--orange);border:1px solid rgba(249,115,22,0.2)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px}
+.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid var(--border)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:28px;background:var(--navy)}
+
+/* PANELS */
+.panel{display:none}
+.panel.active{display:block}
+
+/* CARDS */
+.card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:24px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-title{font-size:16px;font-weight:700}
+.card-sub{font-size:13px;color:var(--text2);margin-top:2px}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:20px}
+.stat-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:700;letter-spacing:-1px}
+.stat-value.orange{color:var(--orange)}
+.stat-value.blue{color:var(--blue-light)}
+.stat-value.green{color:var(--success)}
+.stat-value.gold{color:var(--gold)}
+.stat-change{font-size:12px;color:var(--text3);margin-top:4px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:8px;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:hover{background:var(--orange2)}
+.btn-secondary{background:var(--navy3);color:var(--text);border:1px solid var(--border2)}
+.btn-secondary:hover{background:var(--navy4)}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.3)}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-success{background:var(--success-bg);color:var(--success);border:1px solid rgba(16,185,129,0.3)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn svg{width:15px;height:15px}
+
+/* BADGE / TAG */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-orange{background:var(--orange-glow);color:var(--orange);border:1px solid rgba(249,115,22,0.25)}
+.badge-blue{background:var(--info-bg);color:var(--blue-light);border:1px solid rgba(59,130,246,0.25)}
+.badge-green{background:var(--success-bg);color:var(--success);border:1px solid rgba(16,185,129,0.25)}
+.badge-gold{background:rgba(245,158,11,0.12);color:var(--gold);border:1px solid rgba(245,158,11,0.25)}
+.badge-red{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(239,68,68,0.25)}
+.badge-gray{background:rgba(255,255,255,0.06);color:var(--text2);border:1px solid var(--border)}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px}
+tr:hover td{background:rgba(255,255,255,0.02)}
+tr:last-child td{border-bottom:none}
+
+/* FILE GRID */
+.file-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.file-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:16px;cursor:pointer;transition:all .2s;position:relative;group:true}
+.file-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.file-card.selected{border-color:var(--orange);background:var(--orange-glow)}
+.file-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:22px}
+.file-name{font-size:13px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta{font-size:11px;color:var(--text3)}
+.file-tags{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.file-actions{position:absolute;top:8px;right:8px;display:none;gap:4px}
+.file-card:hover .file-actions{display:flex}
+
+/* PROJECT CARDS */
+.project-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.project-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:20px;cursor:pointer;transition:all .2s}
+.project-card:hover{border-color:var(--blue-light);transform:translateY(-2px)}
+.project-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.project-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.project-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.project-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.project-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.progress-bar{height:4px;background:var(--navy3);border-radius:2px;overflow:hidden;flex:1;margin:0 12px}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--orange))}
+
+/* SECTION GROUP */
+.section-group{margin-bottom:32px}
+.section-group-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.section-group-title{font-size:14px;font-weight:700;color:var(--text2)}
+.section-line{flex:1;height:1px;background:var(--border)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px)}
+.modal{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:32px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.form-input{width:100%;background:var(--navy3);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--orange)}
+select.form-input{cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius2);padding:40px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:20px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--orange);background:var(--orange-glow)}
+.upload-zone svg{width:40px;height:40px;color:var(--text3);margin:0 auto 12px}
+.upload-zone p{font-size:14px;color:var(--text2);margin-bottom:4px}
+.upload-zone span{font-size:12px;color:var(--text3)}
+
+/* ADMIN PANEL */
+.user-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--radius);transition:background .15s}
+.user-row:hover{background:var(--navy3)}
+.user-info{flex:1}
+.user-name{font-size:14px;font-weight:600}
+.user-email{font-size:12px;color:var(--text3)}
+.user-actions{display:flex;gap:8px;align-items:center}
+
+/* POLICY EDITOR */
+.policy-block{background:var(--navy3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.policy-title{font-size:14px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.policy-text{font-size:12px;color:var(--text2);line-height:1.6}
+.policy-footer{background:var(--surface);border-top:1px solid var(--border);padding:24px;text-align:center}
+.policy-footer p{font-size:12px;color:var(--text3);max-width:700px;margin:0 auto;line-height:1.7}
+
+/* NOTIFICATIONS */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9000;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:12px 20px;font-size:13px;display:flex;align-items:center;gap:10px;animation:slideIn .3s ease;box-shadow:var(--shadow);min-width:280px}
+.toast.success{border-color:rgba(16,185,129,0.4);color:var(--success)}
+.toast.error{border-color:rgba(239,68,68,0.4);color:var(--danger)}
+.toast.info{border-color:rgba(59,130,246,0.4);color:var(--blue-light)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 20px}
+.empty-state svg{width:56px;height:56px;color:var(--text3);margin:0 auto 16px}
+.empty-state h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.empty-state p{font-size:13px;color:var(--text2)}
+
+/* DROPDOWN */
+.dropdown{position:relative;display:inline-block}
+.dropdown-menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius2);padding:6px;min-width:180px;z-index:200;box-shadow:var(--shadow);display:none}
+.dropdown-menu.open{display:block}
+.dropdown-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;font-size:13px;cursor:pointer;transition:background .15s;color:var(--text)}
+.dropdown-item:hover{background:var(--navy3)}
+.dropdown-item.danger{color:var(--danger)}
+.dropdown-item svg{width:15px;height:15px}
+
+/* PROGRESS */
+.progress-circle{position:relative;display:inline-flex;align-items:center;justify-content:center}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .project-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="26" cy="26" r="26" fill="#0f2040"/>
+        <circle cx="26" cy="26" r="24" fill="none" stroke="#1a56db" stroke-width="2" opacity="0.6"/>
+        <path d="M26 10 C18 14, 14 22, 16 30 C18 36, 24 40, 26 42 C28 40, 34 36, 36 30 C38 22, 34 14, 26 10Z" fill="#f97316" opacity="0.9"/>
+        <path d="M26 14 C22 17, 20 23, 22 28 C24 33, 26 36, 26 38 C26 36, 28 33, 30 28 C32 23, 30 17, 26 14Z" fill="#fbbf24"/>
+        <circle cx="26" cy="24" r="5" fill="#fff" opacity="0.15"/>
+      </svg>
+      <div class="auth-logo-text">Hian<span>Studios</span></div>
+    </div>
+    <div id="login-view">
+      <div class="auth-title">Workspace Privado</div>
+      <div class="auth-sub">Ingresa tus credenciales para acceder</div>
+      <div class="auth-error" id="auth-error">Contraseña o correo incorrecto</div>
+      <div class="auth-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="login-email" placeholder="tucorreo@gmail.com">
+      </div>
+      <div class="auth-field">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Ingresar al Workspace</button>
+      <div class="auth-hint">¿Acceso denegado? Contacta al <a onclick="showAdminContact()">administrador</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+        <circle cx="16" cy="16" r="16" fill="#0f2040"/>
+        <path d="M16 5 C11 8, 9 13, 10 18 C11 22, 15 25, 16 26 C17 25, 21 22, 22 18 C23 13, 21 8, 16 5Z" fill="#f97316"/>
+        <path d="M16 8 C13 10, 12 14, 13 17 C14 20, 16 22, 16 23 C16 22, 18 20, 19 17 C20 14, 19 10, 16 8Z" fill="#fbbf24"/>
+      </svg>
+      Hian<span>Studios</span>
+    </div>
+    <div class="topbar-search">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Buscar archivos, proyectos..." oninput="globalSearch(this.value)" id="global-search">
+    </div>
+    <div class="topbar-right">
+      <div id="drive-status" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--navy3);transition:all .2s" onclick="handleDriveConnect()" title="Google Drive">
+        <svg width="16" height="16" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
+        <span id="drive-status-text">Conectar Drive</span>
+        <span id="drive-dot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></span>
+      </div>
+      <button class="icon-btn notif-dot" title="Notificaciones" onclick="showPanel('notif-panel')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <div class="topbar-user" onclick="toggleUserMenu()" id="user-menu-btn">
+        <div class="avatar avatar-orange" id="user-avatar">HS</div>
+        <div>
+          <div class="topbar-username" id="topbar-username">Usuario</div>
+          <div class="topbar-role" id="topbar-role">Miembro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER DROPDOWN -->
+  <div id="user-dropdown" class="dropdown-menu" style="position:fixed;top:56px;right:12px;z-index:999">
+    <div class="dropdown-item" onclick="showPanel('profile-panel')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Mi Perfil
+    </div>
+    <div class="dropdown-item" onclick="if(currentUser.role==='admin'){showPanel('admin-panel')}else{toast('Solo el admin puede acceder','error')}">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Panel Admin
+    </div>
+    <div class="divider" style="margin:4px 0"></div>
+    <div class="dropdown-item danger" onclick="doLogout()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Cerrar Sesión
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Principal</div>
+        <div class="nav-item active" onclick="showPanel('dashboard-panel',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item" onclick="showPanel('files-panel',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Archivos
+          <span class="nav-badge" id="files-count">0</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('projects-panel',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Proyectos
+          <span class="nav-badge" id="proj-count">0</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('groups-panel',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Grupos
+        </div>
+        <div class="nav-item" onclick="showPanel('shared-panel',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Compartidos
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Organización</div>
+        <div class="nav-item" id="admin-nav" onclick="if(currentUser.role==='admin'){showPanel('admin-panel',this)}else{toast('Sin permisos de admin','error')}">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Admin
+        </div>
+        <div class="nav-item" onclick="showPanel('policy-panel',this)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Políticas
+        </div>
+      </div>
+      <div class="sidebar-bottom">
+        <div style="font-size:11px;color:var(--text3);text-align:center">HianStudios Workspace<br>v1.0 — 2025</div>
+      </div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content" id="content-area">
+
+      <!-- DASHBOARD PANEL -->
+      <div class="panel active" id="dashboard-panel">
+        <div style="margin-bottom:28px">
+          <h1 style="font-size:24px;font-weight:700;margin-bottom:4px">Bienvenido, <span id="welcome-name" style="color:var(--orange)">Usuario</span></h1>
+          <p style="font-size:14px;color:var(--text2)" id="welcome-date">Lunes, 4 de mayo 2025</p>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Archivos</div>
+            <div class="stat-value orange" id="stat-files">0</div>
+            <div class="stat-change">Total subidos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Proyectos</div>
+            <div class="stat-value blue" id="stat-proj">0</div>
+            <div class="stat-change">Activos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Miembros</div>
+            <div class="stat-value green" id="stat-members">0</div>
+            <div class="stat-change">En el workspace</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Almacenamiento</div>
+            <div class="stat-value gold" id="stat-storage">0 KB</div>
+            <div class="stat-change">Usado</div>
+          </div>
+        </div>
+        <!-- RECENT FILES -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Archivos Recientes</div>
+              <div class="card-sub">Últimos subidos al workspace</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="showPanel('files-panel',null)">Ver todos</button>
+          </div>
+          <div id="recent-files-list">
+            <div class="empty-state" style="padding:30px">
+              <p style="color:var(--text3);font-size:13px">Sube archivos para verlos aquí</p>
+            </div>
+          </div>
+        </div>
+        <!-- RECENT PROJECTS -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Proyectos Activos</div>
+              <div class="card-sub">Estado actual de los proyectos</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openCreateProjectModal()">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nuevo
+            </button>
+          </div>
+          <div id="dashboard-projects"></div>
+        </div>
+      </div>
+
+      <!-- FILES PANEL -->
+      <div class="panel" id="files-panel">
+        <div class="card-header" style="margin-bottom:20px">
+          <div>
+            <h2 style="font-size:20px;font-weight:700">Archivos</h2>
+            <p style="font-size:13px;color:var(--text2)">Gestiona tus archivos y documentos</p>
+          </div>
+          <button class="btn btn-primary" onclick="document.getElementById('file-upload-input').click()">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            Subir Archivo
+          </button>
+        </div>
+        <input type="file" id="file-upload-input" multiple hidden onchange="uploadFiles(this.files)">
+        <!-- UPLOAD ZONE -->
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-upload-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          <p>Arrastra archivos aquí o haz clic para subir</p>
+          <span>Soporta cualquier tipo de archivo</span>
+        </div>
+        <!-- TOOLBAR -->
+        <div class="file-toolbar">
+          <select class="form-input" style="width:auto;padding:8px 12px;font-size:12px" onchange="filterFiles(this.value)" id="files-filter">
+            <option value="all">Todos</option>
+            <option value="en-proceso">En Proceso</option>
+            <option value="terminado">Terminado</option>
+          </select>
+          <select class="form-input" style="width:auto;padding:8px 12px;font-size:12px" onchange="sortFiles(this.value)">
+            <option value="date">Más reciente</option>
+            <option value="name">Nombre</option>
+            <option value="size">Tamaño</option>
+          </select>
+          <div style="margin-left:auto;display:flex;gap:6px">
+            <button class="icon-btn" onclick="setFileView('grid')" id="view-grid" style="background:var(--navy3)">
+              <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+            </button>
+            <button class="icon-btn" onclick="setFileView('list')" id="view-list">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="files-grid" class="file-grid"></div>
+        <div id="files-list-view" style="display:none">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nombre</th><th>Tipo</th><th>Tamaño</th><th>Estado</th><th>Subido por</th><th>Fecha</th><th>Acciones</th></tr></thead>
+              <tbody id="files-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECTS PANEL -->
+      <div class="panel" id="projects-panel">
+        <div class="card-header" style="margin-bottom:24px">
+          <div>
+            <h2 style="font-size:20px;font-weight:700">Proyectos</h2>
+            <p style="font-size:13px;color:var(--text2)">Organiza tu trabajo por proyecto</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateProjectModal()">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo Proyecto
+          </button>
+        </div>
+        <!-- SECTIONS TABS -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap" id="sections-tabs">
+          <button class="btn btn-secondary btn-sm active-tab" onclick="filterProjects('all',this)" id="tab-all">Todos</button>
+          <button class="btn btn-secondary btn-sm" onclick="filterProjects('en-proceso',this)">🔄 En Proceso</button>
+          <button class="btn btn-secondary btn-sm" onclick="filterProjects('terminado',this)">✅ Terminados</button>
+        </div>
+        <div class="project-grid" id="projects-grid"></div>
+      </div>
+
+      <!-- GROUPS PANEL -->
+      <div class="panel" id="groups-panel">
+        <div class="card-header" style="margin-bottom:24px">
+          <div>
+            <h2 style="font-size:20px;font-weight:700">Grupos y Secciones</h2>
+            <p style="font-size:13px;color:var(--text2)">Organiza equipos y asigna acceso</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateGroupModal()">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo Grupo
+          </button>
+        </div>
+        <div id="groups-container"></div>
+      </div>
+
+      <!-- SHARED PANEL -->
+      <div class="panel" id="shared-panel">
+        <div style="margin-bottom:24px">
+          <h2 style="font-size:20px;font-weight:700">Compartidos Conmigo</h2>
+          <p style="font-size:13px;color:var(--text2)">Archivos y proyectos que otros han compartido contigo</p>
+        </div>
+        <div id="shared-list">
+          <div class="empty-state">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <h3>Nada compartido aún</h3>
+            <p>Los archivos compartidos por otros miembros aparecerán aquí</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN PANEL -->
+      <div class="panel" id="admin-panel">
+        <div style="margin-bottom:24px">
+          <h2 style="font-size:20px;font-weight:700">Panel de Administración</h2>
+          <p style="font-size:13px;color:var(--text2)">Control total del workspace — Solo Admin</p>
+        </div>
+        <!-- ADMIN TABS -->
+        <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="showAdminTab('users-tab',this)" id="admin-tab-btn-users" style="background:var(--orange);color:#fff">Usuarios</button>
+          <button class="btn btn-secondary btn-sm" onclick="showAdminTab('access-tab',this)" id="admin-tab-btn-access">Control de Acceso</button>
+          <button class="btn btn-secondary btn-sm" onclick="showAdminTab('settings-tab',this)" id="admin-tab-btn-settings">Configuración</button>
+          <button class="btn btn-secondary btn-sm" onclick="showAdminTab('password-tab',this)" id="admin-tab-btn-password">Cambiar Contraseña</button>
+        </div>
+
+        <!-- USERS TAB -->
+        <div id="users-tab">
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              <div class="card-title">Gestión de Usuarios</div>
+              <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">+ Agregar Usuario</button>
+            </div>
+            <div id="users-admin-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Solicitudes de Acceso</div>
+            </div>
+            <div id="access-requests" style="color:var(--text3);font-size:13px;text-align:center;padding:20px">No hay solicitudes pendientes</div>
+          </div>
+        </div>
+
+        <!-- ACCESS CONTROL TAB -->
+        <div id="access-tab" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Control de Acceso</div>
+              <div class="card-sub">Gestiona quién puede ver qué</div>
+            </div>
+            <div id="access-control-list"></div>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settings-tab" style="display:none">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Configuración del Workspace</div></div>
+            <div class="form-group">
+              <div class="form-label">Nombre del Workspace</div>
+              <input class="form-input" id="ws-name" value="HianStudios Workspace">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Email del Admin</div>
+              <input class="form-input" id="ws-admin-email" value="hianstudioshs@gmail.com" disabled>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Cambiar Email Admin</div>
+              <div style="display:flex;gap:8px">
+                <input class="form-input" id="new-admin-email" placeholder="nuevo@email.com" style="flex:1">
+                <button class="btn btn-secondary" onclick="changeAdminEmail()">Actualizar</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Workspace Público</div>
+              <select class="form-input" style="width:auto">
+                <option>Privado (Solo invitados)</option>
+                <option>Con enlace</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">Guardar Configuración</button>
+          </div>
+        </div>
+
+        <!-- CHANGE PASSWORD TAB -->
+        <div id="password-tab" style="display:none">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Cambiar Contraseña del Workspace</div></div>
+            <div class="form-group">
+              <div class="form-label">Contraseña Actual</div>
+              <input type="password" class="form-input" id="curr-pass" placeholder="Contraseña actual">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Nueva Contraseña</div>
+              <input type="password" class="form-input" id="new-pass" placeholder="Nueva contraseña">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Confirmar Nueva Contraseña</div>
+              <input type="password" class="form-input" id="confirm-pass" placeholder="Repite la contraseña">
+            </div>
+            <button class="btn btn-primary" onclick="changePassword()">Cambiar Contraseña</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- POLICY PANEL -->
+      <div class="panel" id="policy-panel">
+        <div style="margin-bottom:24px">
+          <h2 style="font-size:20px;font-weight:700">Políticas del Workspace</h2>
+          <p style="font-size:13px;color:var(--text2)">Normas y condiciones de uso de HianStudios</p>
+        </div>
+        <div id="policy-list"></div>
+        <div style="margin-top:20px" id="add-policy-section">
+          <!-- ADMIN ONLY -->
+        </div>
+      </div>
+
+      <!-- PROFILE PANEL -->
+      <div class="panel" id="profile-panel">
+        <div style="margin-bottom:24px">
+          <h2 style="font-size:20px;font-weight:700">Mi Perfil</h2>
+        </div>
+        <div class="card" style="max-width:500px">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+            <div class="avatar avatar-orange" style="width:64px;height:64px;font-size:22px" id="profile-avatar">HS</div>
+            <div>
+              <div style="font-size:18px;font-weight:700" id="profile-name">Usuario</div>
+              <div style="font-size:13px;color:var(--text2)" id="profile-email">email</div>
+              <div style="margin-top:4px" id="profile-role-badge"></div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="form-group" style="margin-top:16px">
+            <div class="form-label">Nombre para mostrar</div>
+            <input class="form-input" id="display-name" placeholder="Tu nombre">
+          </div>
+          <button class="btn btn-primary" onclick="saveProfile()">Guardar Cambios</button>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS PANEL -->
+      <div class="panel" id="notif-panel">
+        <div style="margin-bottom:24px">
+          <h2 style="font-size:20px;font-weight:700">Notificaciones</h2>
+        </div>
+        <div id="notif-list">
+          <div class="empty-state">
+            <p style="color:var(--text3);font-size:13px">Sin notificaciones nuevas</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- POLICY FOOTER -->
+  <div class="policy-footer" id="policy-footer">
+    <p id="footer-policy-text">HianStudios Workspace — Uso interno y privado. Los archivos subidos son propiedad de HianStudios. Prohibida la distribución no autorizada. Todos los miembros deben respetar las normas del estudio.</p>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="modal-overlay" class="modal-overlay" style="display:none" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="share-overlay" class="modal-overlay" style="display:none" onclick="closeShareModal(event)">
+  <div class="modal" id="share-modal">
+    <div class="modal-title">Compartir Archivo</div>
+    <div class="modal-sub">Elige quién puede ver este archivo</div>
+    <div id="share-options"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('share-overlay').style.display='none'">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmShare()">Compartir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== GOOGLE DRIVE INTEGRATION ====================
+const GDRIVE_CLIENT_ID = '491184631822-4vmnofmis0jqrsukh44cuusfe5poou9a.apps.googleusercontent.com';
+const GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const GDRIVE_FOLDER_NAME = 'HianStudios Workspace';
+
+let driveAccessToken = null;
+let driveTokenClient = null;
+let driveFolder = null; // folder ID in Drive
+let driveReady = false;
+
+function initDriveClient() {
+  gapi.load('client', async () => {
+    await gapi.client.init({
+      discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+    });
+    driveReady = true;
+    // Restore token if saved
+    const saved = localStorage.getItem('hs_drive_token');
+    if (saved) {
+      try {
+        const tok = JSON.parse(saved);
+        if (tok.expires > Date.now()) {
+          driveAccessToken = tok.access_token;
+          gapi.client.setToken({ access_token: driveAccessToken });
+          setDriveStatus(true);
+          await ensureDriveFolder();
+        } else {
+          localStorage.removeItem('hs_drive_token');
+        }
+      } catch(e) { localStorage.removeItem('hs_drive_token'); }
+    }
+  });
+
+  driveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GDRIVE_CLIENT_ID,
+    scope: GDRIVE_SCOPES,
+    callback: async (resp) => {
+      if (resp.error) { toast('Error conectando Drive: ' + resp.error, 'error'); return; }
+      driveAccessToken = resp.access_token;
+      gapi.client.setToken({ access_token: driveAccessToken });
+      // Save token with expiry
+      localStorage.setItem('hs_drive_token', JSON.stringify({
+        access_token: resp.access_token,
+        expires: Date.now() + (resp.expires_in - 60) * 1000
+      }));
+      setDriveStatus(true);
+      toast('✅ Google Drive conectado', 'success');
+      addNotif('Google Drive conectado al workspace');
+      await ensureDriveFolder();
+    }
+  });
+}
+
+function handleDriveConnect() {
+  if (driveAccessToken) {
+    if (confirm('¿Desconectar Google Drive?')) {
+      driveAccessToken = null;
+      driveFolder = null;
+      gapi.client.setToken(null);
+      localStorage.removeItem('hs_drive_token');
+      setDriveStatus(false);
+      toast('Drive desconectado', 'info');
+    }
+    return;
+  }
+  if (!driveReady) { toast('Cargando cliente Drive, intenta en un momento...', 'info'); return; }
+  driveTokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+function setDriveStatus(connected) {
+  const dot = document.getElementById('drive-dot');
+  const txt = document.getElementById('drive-status-text');
+  const box = document.getElementById('drive-status');
+  if (connected) {
+    dot.style.background = 'var(--success)';
+    txt.textContent = 'Drive Conectado';
+    box.style.borderColor = 'rgba(16,185,129,0.4)';
+  } else {
+    dot.style.background = 'var(--text3)';
+    txt.textContent = 'Conectar Drive';
+    box.style.borderColor = 'var(--border2)';
+  }
+}
+
+async function ensureDriveFolder() {
+  try {
+    // Search for existing folder
+    const res = await gapi.client.drive.files.list({
+      q: `name='${GDRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields: 'files(id,name)',
+      spaces: 'drive'
+    });
+    if (res.result.files && res.result.files.length > 0) {
+      driveFolder = res.result.files[0].id;
+    } else {
+      // Create folder
+      const folder = await gapi.client.drive.files.create({
+        resource: {
+          name: GDRIVE_FOLDER_NAME,
+          mimeType: 'application/vnd.google-apps.folder'
+        },
+        fields: 'id'
+      });
+      driveFolder = folder.result.id;
+      toast('📁 Carpeta "HianStudios Workspace" creada en Drive', 'info');
+    }
+  } catch(e) {
+    console.error('Error creando carpeta Drive:', e);
+  }
+}
+
+async function uploadFileToDrive(file, fileId) {
+  if (!driveAccessToken) return null;
+  try {
+    // Show uploading indicator on card
+    const card = document.getElementById('fc-' + fileId);
+    if (card) {
+      let ind = card.querySelector('.drive-ind');
+      if (!ind) {
+        ind = document.createElement('div');
+        ind.className = 'drive-ind';
+        ind.style.cssText = 'font-size:10px;color:var(--text3);margin-top:4px;display:flex;align-items:center;gap:4px';
+        ind.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> Subiendo a Drive...';
+        card.appendChild(ind);
+      }
+    }
+
+    if (!driveFolder) await ensureDriveFolder();
+
+    const metadata = {
+      name: file.name,
+      parents: driveFolder ? [driveFolder] : []
+    };
+
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('file', file);
+
+    const resp = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + driveAccessToken },
+      body: form
+    });
+
+    if (!resp.ok) throw new Error('Upload failed: ' + resp.status);
+    const data = await resp.json();
+
+    // Update card
+    if (card) {
+      const ind = card.querySelector('.drive-ind');
+      if (ind) {
+        ind.innerHTML = '<span style="color:var(--success)">☁ En Drive</span>';
+        ind.style.color = 'var(--success)';
+      }
+    }
+
+    return { driveId: data.id, driveLink: data.webViewLink, driveDownloadLink: data.webContentLink };
+  } catch(e) {
+    console.error('Drive upload error:', e);
+    toast('⚠ Error subiendo a Drive: ' + e.message, 'error');
+    return null;
+  }
+}
+
+async function deleteFileFromDrive(driveId) {
+  if (!driveAccessToken || !driveId) return;
+  try {
+    await gapi.client.drive.files.delete({ fileId: driveId });
+  } catch(e) {
+    console.error('Error eliminando de Drive:', e);
+  }
+}
+
+// Spin animation for upload indicator
+const spinStyle = document.createElement('style');
+spinStyle.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+document.head.appendChild(spinStyle);
+
+window.addEventListener('load', () => {
+  if (typeof gapi !== 'undefined' && typeof google !== 'undefined') initDriveClient();
+  else setTimeout(initDriveClient, 1500);
+});
+
+// ==================== DATA STORE ====================
+function getStore(){return JSON.parse(localStorage.getItem('hsws')||'{}')}
+function setStore(d){localStorage.setItem('hsws',JSON.stringify(d))}
+function initStore(){
+  let s=getStore();
+  if(!s.initialized){
+    s={
+      initialized:true,
+      workspacePassword:'2409',
+      workspaceName:'HianStudios Workspace',
+      adminEmail:'hianstudioshs@gmail.com',
+      users:[
+        {id:'u1',email:'espaciodehs@gmail.com',name:'HianStudios',role:'user',active:true,blocked:false,joined:new Date().toISOString()},
+        {id:'u2',email:'hianstudioshs@gmail.com',name:'Admin HianStudios',role:'admin',active:true,blocked:false,joined:new Date().toISOString()}
+      ],
+      files:[],
+      projects:[],
+      groups:[
+        {id:'g1',name:'Diseño',color:'#f97316',members:['u1','u2'],desc:'Equipo de diseño gráfico'}
+      ],
+      policies:[
+        {id:'p1',title:'Uso Interno',text:'Este workspace es exclusivo para miembros autorizados de HianStudios. Queda prohibido el acceso no autorizado.',icon:'🔒'},
+        {id:'p2',title:'Propiedad Intelectual',text:'Todos los archivos, proyectos y materiales subidos son propiedad de HianStudios. No se permite la distribución externa sin permiso.',icon:'©'},
+        {id:'p3',title:'Confidencialidad',text:'Los miembros se comprometen a mantener confidencialidad sobre los proyectos y clientes del estudio.',icon:'🤝'},
+        {id:'p4',title:'Uso Responsable',text:'Los recursos del workspace deben usarse únicamente para fines profesionales relacionados con el estudio.',icon:'✅'}
+      ],
+      notifications:[],
+      sharedFiles:[]
+    };
+    setStore(s);
+  }
+  return s;
+}
+
+// ==================== AUTH ====================
+let currentUser=null;
+let fileViewMode='grid';
+let activeSortMode='date';
+
+function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const pass=document.getElementById('login-pass').value;
+  const s=getStore();
+  if(pass!==s.workspacePassword){
+    document.getElementById('auth-error').style.display='block';
+    document.getElementById('auth-error').textContent='Contraseña incorrecta';
+    return;
+  }
+  const user=s.users.find(u=>u.email.toLowerCase()===email);
+  if(!user){
+    document.getElementById('auth-error').style.display='block';
+    document.getElementById('auth-error').textContent='Correo no registrado en el workspace';
+    return;
+  }
+  if(user.blocked){
+    document.getElementById('auth-error').style.display='block';
+    document.getElementById('auth-error').textContent='Tu acceso ha sido bloqueado. Contacta al administrador.';
+    return;
+  }
+  document.getElementById('auth-error').style.display='none';
+  currentUser=user;
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  initApp();
+}
+
+function doLogout(){
+  currentUser=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-email').value='';
+  document.getElementById('user-dropdown').classList.remove('open');
+  toast('Sesión cerrada correctamente','info');
+}
+
+// ==================== APP INIT ====================
+function initApp(){
+  const s=getStore();
+  // Update topbar
+  document.getElementById('topbar-username').textContent=currentUser.name||currentUser.email.split('@')[0];
+  document.getElementById('topbar-role').textContent=currentUser.role==='admin'?'Administrador':'Miembro';
+  document.getElementById('user-avatar').textContent=getInitials(currentUser.name||currentUser.email);
+  document.getElementById('welcome-name').textContent=currentUser.name||currentUser.email.split('@')[0];
+  // Date
+  document.getElementById('welcome-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // Profile
+  document.getElementById('profile-name').textContent=currentUser.name;
+  document.getElementById('profile-email').textContent=currentUser.email;
+  document.getElementById('profile-avatar').textContent=getInitials(currentUser.name);
+  document.getElementById('display-name').value=currentUser.name;
+  document.getElementById('profile-role-badge').innerHTML=currentUser.role==='admin'?'<span class="badge badge-orange">Admin</span>':'<span class="badge badge-blue">Miembro</span>';
+  // Show/hide admin nav
+  if(currentUser.role!=='admin') document.getElementById('admin-nav').style.opacity='0.5';
+  // Render everything
+  renderStats();
+  renderDashboard();
+  renderFiles();
+  renderProjects();
+  renderGroups();
+  renderAdminUsers();
+  renderPolicies();
+  updateFilesCount();
+}
+
+function getInitials(name){
+  if(!name)return'HS';
+  return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+}
+
+// ==================== STATS ====================
+function renderStats(){
+  const s=getStore();
+  document.getElementById('stat-files').textContent=s.files.length;
+  document.getElementById('stat-proj').textContent=s.projects.length;
+  document.getElementById('stat-members').textContent=s.users.filter(u=>!u.blocked).length;
+  const totalSize=s.files.reduce((a,f)=>a+f.size,0);
+  document.getElementById('stat-storage').textContent=formatSize(totalSize);
+  document.getElementById('files-count').textContent=s.files.length;
+  document.getElementById('proj-count').textContent=s.projects.length;
+}
+
+function updateFilesCount(){
+  const s=getStore();
+  document.getElementById('files-count').textContent=s.files.length;
+  document.getElementById('proj-count').textContent=s.projects.length;
+}
+
+// ==================== FILES ====================
+function uploadFiles(files){
+  const s=getStore();
+  Array.from(files).forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=async function(e){
+      const fileId='f'+Date.now()+Math.random().toString(36).substr(2,5);
+      const fileData={
+        id:fileId,
+        name:file.name,
+        type:file.type||'unknown',
+        size:file.size,
+        dataUrl:e.target.result,
+        uploadedBy:currentUser.email,
+        uploaderName:currentUser.name,
+        date:new Date().toISOString(),
+        status:'en-proceso',
+        project:null,
+        sharedWith:[],
+        driveId:null,
+        driveLink:null,
+        driveDownloadLink:null
+      };
+      s.files.unshift(fileData);
+      setStore(s);
+      renderStats();
+      renderFiles();
+      renderDashboard();
+      updateFilesCount();
+      toast(`"${file.name}" subido correctamente`,'success');
+      addNotif(`Archivo "${file.name}" subido por ${currentUser.name}`);
+
+      // Upload to Google Drive if connected
+      if(driveAccessToken){
+        const driveResult = await uploadFileToDrive(file, fileId);
+        if(driveResult){
+          const s2=getStore();
+          const f2=s2.files.find(x=>x.id===fileId);
+          if(f2){
+            f2.driveId=driveResult.driveId;
+            f2.driveLink=driveResult.driveLink;
+            f2.driveDownloadLink=driveResult.driveDownloadLink;
+            setStore(s2);
+          }
+          toast(`☁ "${file.name}" guardado en Drive`,'success');
+          addNotif(`"${file.name}" sincronizado con Google Drive`);
+        }
+      } else {
+        // Show hint to connect drive
+        toast(`💡 Conecta Google Drive para guardar en la nube`,'info');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  uploadFiles(e.dataTransfer.files);
+}
+
+function renderFiles(filter='all'){
+  const s=getStore();
+  let files=[...s.files];
+  if(filter!=='all') files=files.filter(f=>f.status===filter);
+  const filterEl=document.getElementById('files-filter');
+  if(filterEl) filter=filterEl.value||'all';
+  files=[...s.files].filter(f=>filter==='all'||f.status===filter);
+  // Sort
+  if(activeSortMode==='name') files.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(activeSortMode==='size') files.sort((a,b)=>b.size-a.size);
+  else files.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  // Grid view
+  const grid=document.getElementById('files-grid');
+  if(!files.length){
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="56" height="56"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><h3>Sin archivos</h3><p>Sube tu primer archivo</p></div>';
+  } else {
+    grid.innerHTML=files.map(f=>`
+      <div class="file-card" id="fc-${f.id}" onclick="selectFile('${f.id}')">
+        <div class="file-actions">
+          <button class="icon-btn" style="width:26px;height:26px;background:var(--navy2)" onclick="event.stopPropagation();downloadFile('${f.id}')" title="Descargar">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="icon-btn" style="width:26px;height:26px;background:var(--navy2)" onclick="event.stopPropagation();openShareFile('${f.id}')" title="Compartir">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          ${(currentUser.role==='admin'||f.uploadedBy===currentUser.email)?`<button class="icon-btn" style="width:26px;height:26px;background:var(--danger-bg);color:var(--danger)" onclick="event.stopPropagation();deleteFile('${f.id}')" title="Eliminar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>`:''}
+        </div>
+        <div class="file-icon" style="background:${getFileColor(f.type)}">${getFileEmoji(f.name,f.type)}</div>
+        <div class="file-name" title="${f.name}">${f.name}</div>
+        <div class="file-meta">${formatSize(f.size)} · ${formatDate(f.date)}</div>
+        <div class="file-meta" style="margin-top:2px">${f.uploaderName}</div>
+        <div class="file-tags">
+          <span class="badge ${f.status==='terminado'?'badge-green':'badge-orange'}" style="font-size:10px">${f.status==='terminado'?'✅ Terminado':'🔄 En Proceso'}</span>
+          ${f.driveId?`<span class="badge badge-blue" style="font-size:10px" title="Guardado en Google Drive">☁ Drive</span>`:''}
+        </div>
+        <div style="margin-top:8px;display:flex;gap:4px">
+          <button onclick="event.stopPropagation();toggleStatus('${f.id}')" class="btn btn-sm btn-secondary" style="font-size:10px;padding:3px 8px">${f.status==='terminado'?'↩ Reabrir':'✓ Terminar'}</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // List view
+  const tbody=document.getElementById('files-table-body');
+  if(tbody){
+    tbody.innerHTML=files.map(f=>`
+      <tr>
+        <td style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">${getFileEmoji(f.name,f.type)}</span> ${f.name}</td>
+        <td><span class="badge badge-gray">${getFileExt(f.name)}</span></td>
+        <td>${formatSize(f.size)}</td>
+        <td><span class="badge ${f.status==='terminado'?'badge-green':'badge-orange'}">${f.status==='terminado'?'✅ Terminado':'🔄 En Proceso'}</span></td>
+        <td>${f.uploaderName}</td>
+        <td>${formatDate(f.date)}</td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-secondary" onclick="downloadFile('${f.id}')">⬇</button>
+            <button class="btn btn-sm btn-secondary" onclick="openShareFile('${f.id}')">↗</button>
+            ${(currentUser.role==='admin'||f.uploadedBy===currentUser.email)?`<button class="btn btn-sm btn-danger" onclick="deleteFile('${f.id}')">🗑</button>`:''}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+}
+
+function filterFiles(val){renderFiles(val)}
+function sortFiles(val){activeSortMode=val;renderFiles()}
+function setFileView(mode){
+  fileViewMode=mode;
+  document.getElementById('files-grid').style.display=mode==='grid'?'grid':'none';
+  document.getElementById('files-list-view').style.display=mode==='list'?'block':'none';
+  document.getElementById('view-grid').style.background=mode==='grid'?'var(--navy3)':'';
+  document.getElementById('view-list').style.background=mode==='list'?'var(--navy3)':'';
+}
+
+function selectFile(id){
+  document.querySelectorAll('.file-card').forEach(c=>c.classList.remove('selected'));
+  const el=document.getElementById('fc-'+id);
+  if(el) el.classList.add('selected');
+}
+
+function downloadFile(id){
+  const s=getStore();
+  const f=s.files.find(x=>x.id===id);
+  if(!f){toast('Archivo no encontrado','error');return;}
+  if(f.driveLink){
+    window.open(f.driveLink,'_blank');
+    toast(`☁ Abriendo "${f.name}" desde Drive`,'success');
+  } else {
+    const a=document.createElement('a');
+    a.href=f.dataUrl;
+    a.download=f.name;
+    a.click();
+    toast(`Descargando "${f.name}"...`,'success');
+  }
+  addNotif(`${currentUser.name} descargó "${f.name}"`);
+}
+
+function deleteFile(id){
+  if(!confirm('¿Eliminar este archivo?'))return;
+  const s=getStore();
+  const f=s.files.find(x=>x.id===id);
+  if(f && f.driveId) deleteFileFromDrive(f.driveId);
+  s.files=s.files.filter(f=>f.id!==id);
+  setStore(s);
+  renderStats();renderFiles();renderDashboard();updateFilesCount();
+  toast('Archivo eliminado','info');
+}
+
+function toggleStatus(id){
+  const s=getStore();
+  const f=s.files.find(x=>x.id===id);
+  if(!f)return;
+  f.status=f.status==='terminado'?'en-proceso':'terminado';
+  setStore(s);
+  renderFiles();
+  toast(`Estado actualizado: ${f.status==='terminado'?'Terminado':'En Proceso'}`,'success');
+}
+
+function openShareFile(id){
+  const s=getStore();
+  const f=s.files.find(x=>x.id===id);
+  if(!f)return;
+  currentShareFileId=id;
+  const other=s.users.filter(u=>u.email!==currentUser.email&&!u.blocked);
+  document.getElementById('share-options').innerHTML=`
+    <div style="margin-bottom:16px;font-size:13px;color:var(--text2)">Archivo: <strong style="color:var(--text)">${f.name}</strong></div>
+    ${other.length?other.map(u=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div class="avatar avatar-blue" style="width:36px;height:36px;font-size:12px">${getInitials(u.name)}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600">${u.name}</div><div style="font-size:11px;color:var(--text3)">${u.email}</div></div>
+        <input type="checkbox" id="share-u-${u.id}" ${f.sharedWith.includes(u.id)?'checked':''} style="width:16px;height:16px">
+      </div>`).join(''):'<p style="color:var(--text3);font-size:13px">No hay otros miembros para compartir</p>'}
+    <div style="margin-top:16px">
+      <div class="form-label">Enlace de Drive</div>
+      <div style="display:flex;gap:8px">
+        <input class="form-input" id="share-link-input" value="${f.driveLink||'[Sin enlace Drive — conecta Drive para obtener uno]'}" readonly style="flex:1">
+        <button class="btn btn-secondary" onclick="
+          const v=document.getElementById('share-link-input').value;
+          if(v.startsWith('http')){navigator.clipboard.writeText(v);toast('Enlace copiado','success');}
+          else{toast('Conecta Drive para obtener un enlace','info');}
+        ">Copiar</button>
+      </div>
+      ${f.driveLink?`<div style="margin-top:8px"><a href="${f.driveLink}" target="_blank" class="btn btn-secondary btn-sm" style="font-size:12px">☁ Abrir en Drive</a></div>`:''}
+    </div>
+  `;
+  document.getElementById('share-overlay').style.display='flex';
+}
+
+let currentShareFileId=null;
+function confirmShare(){
+  const s=getStore();
+  const f=s.files.find(x=>x.id===currentShareFileId);
+  if(!f)return;
+  const other=s.users.filter(u=>u.email!==currentUser.email);
+  f.sharedWith=other.filter(u=>document.getElementById('share-u-'+u.id)?.checked).map(u=>u.id);
+  setStore(s);
+  document.getElementById('share-overlay').style.display='none';
+  toast('Archivo compartido correctamente','success');
+}
+
+function closeShareModal(e){if(e.target===document.getElementById('share-overlay'))document.getElementById('share-overlay').style.display='none'}
+
+// ==================== PROJECTS ====================
+function openCreateProjectModal(){
+  const s=getStore();
+  showModal(`
+    <div class="modal-title">Nuevo Proyecto</div>
+    <div class="modal-sub">Crea un nuevo proyecto en el workspace</div>
+    <div class="form-group">
+      <div class="form-label">Nombre del Proyecto</div>
+      <input class="form-input" id="proj-name" placeholder="Ej: Campaña Redes 2025">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Descripción</div>
+      <textarea class="form-input" id="proj-desc" rows="3" placeholder="Describe el proyecto..." style="resize:vertical"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <div class="form-label">Estado</div>
+        <select class="form-input" id="proj-status">
+          <option value="en-proceso">🔄 En Proceso</option>
+          <option value="terminado">✅ Terminado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Emoji / Ícono</div>
+        <input class="form-input" id="proj-emoji" placeholder="🎨" maxlength="2" value="🎨">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Progreso (%)</div>
+      <input type="range" id="proj-prog" min="0" max="100" value="0" style="width:100%" oninput="document.getElementById('prog-val').textContent=this.value+'%'">
+      <span id="prog-val" style="font-size:12px;color:var(--text2)">0%</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="createProject()">Crear Proyecto</button>
+    </div>
+  `);
+}
+
+function createProject(){
+  const name=document.getElementById('proj-name').value.trim();
+  if(!name){toast('Ingresa un nombre','error');return;}
+  const s=getStore();
+  const proj={
+    id:'p'+Date.now(),
+    name,
+    desc:document.getElementById('proj-desc').value,
+    status:document.getElementById('proj-status').value,
+    emoji:document.getElementById('proj-emoji').value||'🎨',
+    progress:parseInt(document.getElementById('proj-prog').value)||0,
+    createdBy:currentUser.email,
+    creatorName:currentUser.name,
+    date:new Date().toISOString(),
+    files:[],
+    members:[currentUser.id]
+  };
+  s.projects.unshift(proj);
+  setStore(s);
+  closeModal();
+  renderStats();renderProjects();renderDashboard();updateFilesCount();
+  toast(`Proyecto "${name}" creado`,'success');
+  addNotif(`Nuevo proyecto "${name}" creado por ${currentUser.name}`);
+}
+
+function renderProjects(filter='all'){
+  const s=getStore();
+  let projs=[...s.projects];
+  if(filter!=='all') projs=projs.filter(p=>p.status===filter);
+  const grid=document.getElementById('projects-grid');
+  if(!projs.length){
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>Sin proyectos</h3><p>Crea tu primer proyecto</p></div>';
+    return;
+  }
+  grid.innerHTML=projs.map(p=>`
+    <div class="project-card">
+      <div class="project-header">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div class="project-icon" style="background:${p.status==='terminado'?'rgba(16,185,129,0.15)':'rgba(249,115,22,0.15)'}">${p.emoji}</div>
+          <div>
+            <div class="project-name">${p.name}</div>
+            <div class="project-desc">${p.desc||'Sin descripción'}</div>
+          </div>
+        </div>
+        <div class="dropdown" onclick="event.stopPropagation()">
+          <button class="icon-btn" onclick="toggleProjectMenu('pm-${p.id}')">
+            <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+          </button>
+          <div class="dropdown-menu" id="pm-${p.id}">
+            <div class="dropdown-item" onclick="editProject('${p.id}')">✏️ Editar</div>
+            <div class="dropdown-item" onclick="toggleProjectStatus('${p.id}')">${p.status==='terminado'?'↩ Reabrir':'✅ Terminar'}</div>
+            ${(currentUser.role==='admin'||p.createdBy===currentUser.email)?`<div class="dropdown-item danger" onclick="deleteProject('${p.id}')">🗑 Eliminar</div>`:''}
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:8px">
+        <span class="badge ${p.status==='terminado'?'badge-green':'badge-orange'}">${p.status==='terminado'?'✅ Terminado':'🔄 En Proceso'}</span>
+        <span class="badge badge-gray" style="margin-left:4px">${p.files?p.files.length:0} archivos</span>
+      </div>
+      <div class="project-footer">
+        <span style="font-size:12px;color:var(--text3)">${p.progress}%</span>
+        <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%"></div></div>
+        <span style="font-size:11px;color:var(--text3)">${p.creatorName}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterProjects(filter,btn){
+  document.querySelectorAll('#sections-tabs .btn').forEach(b=>{b.style.background='';b.style.color=''});
+  if(btn){btn.style.background='var(--orange)';btn.style.color='#fff'}
+  renderProjects(filter);
+}
+
+function toggleProjectMenu(id){
+  document.querySelectorAll('.dropdown-menu').forEach(m=>{if('pm-'+id!==m.id)m.classList.remove('open')});
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+function toggleProjectStatus(id){
+  const s=getStore();
+  const p=s.projects.find(x=>x.id===id);
+  if(!p)return;
+  p.status=p.status==='terminado'?'en-proceso':'terminado';
+  setStore(s);
+  renderProjects();renderDashboard();
+  toast(`Proyecto "${p.name}": ${p.status==='terminado'?'Terminado':'En Proceso'}`,'success');
+}
+
+function editProject(id){
+  const s=getStore();
+  const p=s.projects.find(x=>x.id===id);
+  if(!p)return;
+  showModal(`
+    <div class="modal-title">Editar Proyecto</div>
+    <div class="modal-sub">${p.name}</div>
+    <div class="form-group">
+      <div class="form-label">Nombre</div>
+      <input class="form-input" id="ep-name" value="${p.name}">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Descripción</div>
+      <textarea class="form-input" id="ep-desc" rows="3" style="resize:vertical">${p.desc||''}</textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <div class="form-label">Estado</div>
+        <select class="form-input" id="ep-status">
+          <option value="en-proceso" ${p.status==='en-proceso'?'selected':''}>🔄 En Proceso</option>
+          <option value="terminado" ${p.status==='terminado'?'selected':''}>✅ Terminado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Emoji</div>
+        <input class="form-input" id="ep-emoji" value="${p.emoji}" maxlength="2">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Progreso: <span id="ep-prog-val">${p.progress}%</span></div>
+      <input type="range" id="ep-prog" min="0" max="100" value="${p.progress}" style="width:100%" oninput="document.getElementById('ep-prog-val').textContent=this.value+'%'">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveProjectEdit('${id}')">Guardar</button>
+    </div>
+  `);
+}
+
+function saveProjectEdit(id){
+  const s=getStore();
+  const p=s.projects.find(x=>x.id===id);
+  if(!p)return;
+  p.name=document.getElementById('ep-name').value;
+  p.desc=document.getElementById('ep-desc').value;
+  p.status=document.getElementById('ep-status').value;
+  p.emoji=document.getElementById('ep-emoji').value||'🎨';
+  p.progress=parseInt(document.getElementById('ep-prog').value)||0;
+  setStore(s);closeModal();renderProjects();renderDashboard();
+  toast('Proyecto actualizado','success');
+}
+
+function deleteProject(id){
+  if(!confirm('¿Eliminar este proyecto?'))return;
+  const s=getStore();
+  s.projects=s.projects.filter(p=>p.id!==id);
+  setStore(s);
+  renderStats();renderProjects();renderDashboard();updateFilesCount();
+  toast('Proyecto eliminado','info');
+}
+
+// ==================== GROUPS ====================
+function openCreateGroupModal(){
+  const s=getStore();
+  showModal(`
+    <div class="modal-title">Nuevo Grupo</div>
+    <div class="modal-sub">Crea un grupo de trabajo</div>
+    <div class="form-group">
+      <div class="form-label">Nombre del Grupo</div>
+      <input class="form-input" id="g-name" placeholder="Ej: Diseño, Desarrollo">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Descripción</div>
+      <input class="form-input" id="g-desc" placeholder="Descripción del grupo">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Color</div>
+      <input type="color" id="g-color" value="#f97316" style="width:60px;height:36px;border:none;background:none;cursor:pointer">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Miembros</div>
+      ${s.users.filter(u=>!u.blocked).map(u=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <input type="checkbox" id="gm-${u.id}" checked style="width:16px;height:16px">
+          <div class="avatar ${u.role==='admin'?'avatar-orange':'avatar-blue'}" style="width:32px;height:32px;font-size:11px">${getInitials(u.name)}</div>
+          <div>
+            <div style="font-size:13px;font-weight:600">${u.name}</div>
+            <div style="font-size:11px;color:var(--text3)">${u.email}</div>
+          </div>
+          <span class="badge ${u.role==='admin'?'badge-orange':'badge-blue'}" style="margin-left:auto">${u.role==='admin'?'Admin':'Miembro'}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="createGroup()">Crear Grupo</button>
+    </div>
+  `);
+}
+
+function createGroup(){
+  const s=getStore();
+  const name=document.getElementById('g-name').value.trim();
+  if(!name){toast('Ingresa un nombre','error');return;}
+  const members=s.users.filter(u=>document.getElementById('gm-'+u.id)?.checked).map(u=>u.id);
+  const group={
+    id:'g'+Date.now(),
+    name,
+    desc:document.getElementById('g-desc').value,
+    color:document.getElementById('g-color').value,
+    members,
+    createdBy:currentUser.email,
+    date:new Date().toISOString()
+  };
+  s.groups.push(group);
+  setStore(s);closeModal();renderGroups();
+  toast(`Grupo "${name}" creado`,'success');
+}
+
+function renderGroups(){
+  const s=getStore();
+  const c=document.getElementById('groups-container');
+  if(!s.groups.length){
+    c.innerHTML='<div class="empty-state"><h3>Sin grupos</h3><p>Crea grupos para organizar tu equipo</p></div>';
+    return;
+  }
+  c.innerHTML=s.groups.map(g=>{
+    const members=s.users.filter(u=>g.members.includes(u.id));
+    return`
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+          <div style="width:48px;height:48px;border-radius:12px;background:${g.color}22;display:flex;align-items:center;justify-content:center;border:2px solid ${g.color}44">
+            <svg fill="none" stroke="${g.color}" stroke-width="2" viewBox="0 0 24 24" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:700">${g.name}</div>
+            <div style="font-size:12px;color:var(--text2)">${g.desc||'Sin descripción'}</div>
+          </div>
+          <span class="badge badge-gray">${members.length} miembro${members.length!==1?'s':''}</span>
+          ${(currentUser.role==='admin'||g.createdBy===currentUser.email)?`<button class="btn btn-danger btn-sm" onclick="deleteGroup('${g.id}')">Eliminar</button>`:''}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${members.map(u=>`
+            <div style="display:flex;align-items:center;gap:6px;background:var(--navy3);padding:6px 10px;border-radius:20px">
+              <div class="avatar ${u.role==='admin'?'avatar-orange':'avatar-blue'}" style="width:24px;height:24px;font-size:9px">${getInitials(u.name)}</div>
+              <span style="font-size:12px;font-weight:500">${u.name}</span>
+              ${u.role==='admin'?'<span class="badge badge-orange" style="font-size:9px;padding:1px 5px">Admin</span>':''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function deleteGroup(id){
+  if(!confirm('¿Eliminar este grupo?'))return;
+  const s=getStore();
+  s.groups=s.groups.filter(g=>g.id!==id);
+  setStore(s);renderGroups();
+  toast('Grupo eliminado','info');
+}
+
+// ==================== ADMIN ====================
+function renderAdminUsers(){
+  const s=getStore();
+  const c=document.getElementById('users-admin-list');
+  if(!c)return;
+  c.innerHTML=s.users.map(u=>`
+    <div class="user-row">
+      <div class="avatar ${u.role==='admin'?'avatar-orange':'avatar-blue'}" style="width:40px;height:40px;font-size:13px">${getInitials(u.name)}</div>
+      <div class="user-info">
+        <div class="user-name">${u.name}</div>
+        <div class="user-email">${u.email}</div>
+      </div>
+      <span class="badge ${u.role==='admin'?'badge-orange':'badge-blue'}">${u.role==='admin'?'Admin':'Miembro'}</span>
+      ${u.blocked?'<span class="badge badge-red">Bloqueado</span>':'<span class="badge badge-green">Activo</span>'}
+      <div class="user-actions">
+        ${u.email!==s.adminEmail?`
+          <button class="btn btn-sm ${u.blocked?'btn-success':'btn-danger'}" onclick="${u.blocked?'unblockUser':'blockUser'}('${u.id}')">${u.blocked?'Desbloquear':'Bloquear'}</button>
+          ${u.role!=='admin'?`<button class="btn btn-sm btn-secondary" onclick="makeAdmin('${u.id}')">Dar Admin</button>`:`<button class="btn btn-sm btn-secondary" onclick="removeAdmin('${u.id}')">Quitar Admin</button>`}
+          <button class="btn btn-sm btn-danger" onclick="removeUser('${u.id}')">Eliminar</button>
+        `:'<span style="font-size:12px;color:var(--text3)">Admin Principal</span>'}
+      </div>
+    </div>
+  `).join('');
+}
+
+function openAddUserModal(){
+  showModal(`
+    <div class="modal-title">Agregar Usuario</div>
+    <div class="modal-sub">Invita a alguien al workspace</div>
+    <div class="form-group">
+      <div class="form-label">Nombre</div>
+      <input class="form-input" id="nu-name" placeholder="Nombre completo">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Correo Electrónico</div>
+      <input class="form-input" id="nu-email" type="email" placeholder="correo@ejemplo.com">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Rol</div>
+      <select class="form-input" id="nu-role">
+        <option value="user">Miembro</option>
+        <option value="admin">Administrador</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="addUser()">Agregar</button>
+    </div>
+  `);
+}
+
+function addUser(){
+  const s=getStore();
+  const name=document.getElementById('nu-name').value.trim();
+  const email=document.getElementById('nu-email').value.trim().toLowerCase();
+  const role=document.getElementById('nu-role').value;
+  if(!name||!email){toast('Completa todos los campos','error');return;}
+  if(s.users.find(u=>u.email===email)){toast('Este correo ya está registrado','error');return;}
+  s.users.push({id:'u'+Date.now(),email,name,role,active:true,blocked:false,joined:new Date().toISOString()});
+  setStore(s);closeModal();renderAdminUsers();renderStats();
+  toast(`Usuario "${name}" agregado`,'success');
+  addNotif(`Nuevo miembro agregado: ${name}`);
+}
+
+function blockUser(id){
+  const s=getStore();
+  const u=s.users.find(x=>x.id===id);
+  if(!u)return;
+  u.blocked=true;
+  setStore(s);renderAdminUsers();
+  toast(`Usuario "${u.name}" bloqueado`,'info');
+}
+
+function unblockUser(id){
+  const s=getStore();
+  const u=s.users.find(x=>x.id===id);
+  if(!u)return;
+  u.blocked=false;
+  setStore(s);renderAdminUsers();
+  toast(`Usuario "${u.name}" desbloqueado`,'success');
+}
+
+function makeAdmin(id){
+  if(!confirm('¿Dar permisos de Admin a este usuario?'))return;
+  const s=getStore();
+  const u=s.users.find(x=>x.id===id);
+  if(!u)return;
+  u.role='admin';
+  setStore(s);renderAdminUsers();
+  toast(`"${u.name}" ahora es Admin`,'success');
+}
+
+function removeAdmin(id){
+  const s=getStore();
+  if(id===s.users.find(u=>u.email===s.adminEmail)?.id){toast('No puedes quitar al admin principal','error');return;}
+  const u=s.users.find(x=>x.id===id);
+  if(!u)return;
+  u.role='user';
+  setStore(s);renderAdminUsers();
+  toast(`"${u.name}" ya no es Admin`,'info');
+}
+
+function removeUser(id){
+  if(!confirm('¿Eliminar este usuario del workspace?'))return;
+  const s=getStore();
+  s.users=s.users.filter(u=>u.id!==id);
+  setStore(s);renderAdminUsers();renderStats();
+  toast('Usuario eliminado','info');
+}
+
+function showAdminTab(tab,btn){
+  ['users-tab','access-tab','settings-tab','password-tab'].forEach(t=>{
+    const el=document.getElementById(t);
+    if(el)el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('[id^="admin-tab-btn-"]').forEach(b=>{b.style.background='';b.style.color=''});
+  if(btn){btn.style.background='var(--orange)';btn.style.color='#fff'}
+  if(tab==='access-tab')renderAccessControl();
+}
+
+function renderAccessControl(){
+  const s=getStore();
+  const c=document.getElementById('access-control-list');
+  if(!c)return;
+  c.innerHTML=`
+    <div style="margin-bottom:16px">
+      <table style="width:100%">
+        <thead><tr><th>Usuario</th><th>Subir Archivos</th><th>Crear Proyectos</th><th>Compartir</th><th>Estado</th></tr></thead>
+        <tbody>
+          ${s.users.map(u=>`
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="avatar ${u.role==='admin'?'avatar-orange':'avatar-blue'}" style="width:28px;height:28px;font-size:10px">${getInitials(u.name)}</div>
+                  <div>
+                    <div style="font-size:13px;font-weight:600">${u.name}</div>
+                    <div style="font-size:11px;color:var(--text3)">${u.role}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge ${u.role==='admin'||!u.blocked?'badge-green':'badge-red'}">${!u.blocked?'✓':'✗'}</span></td>
+              <td><span class="badge ${u.role==='admin'||!u.blocked?'badge-green':'badge-red'}">${!u.blocked?'✓':'✗'}</span></td>
+              <td><span class="badge badge-green">✓</span></td>
+              <td><span class="badge ${u.blocked?'badge-red':'badge-green'}">${u.blocked?'Bloqueado':'Activo'}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function changePassword(){
+  const s=getStore();
+  const curr=document.getElementById('curr-pass').value;
+  const newp=document.getElementById('new-pass').value;
+  const conf=document.getElementById('confirm-pass').value;
+  if(curr!==s.workspacePassword){toast('Contraseña actual incorrecta','error');return;}
+  if(!newp||newp.length<4){toast('La nueva contraseña debe tener al menos 4 caracteres','error');return;}
+  if(newp!==conf){toast('Las contraseñas no coinciden','error');return;}
+  s.workspacePassword=newp;
+  setStore(s);
+  document.getElementById('curr-pass').value='';
+  document.getElementById('new-pass').value='';
+  document.getElementById('confirm-pass').value='';
+  toast('Contraseña cambiada exitosamente','success');
+}
+
+function changeAdminEmail(){
+  const s=getStore();
+  const ne=document.getElementById('new-admin-email').value.trim().toLowerCase();
+  if(!ne||!ne.includes('@')){toast('Ingresa un email válido','error');return;}
+  s.adminEmail=ne;
+  const adminUser=s.users.find(u=>u.role==='admin');
+  if(adminUser)adminUser.email=ne;
+  setStore(s);
+  document.getElementById('ws-admin-email').value=ne;
+  toast('Email de admin actualizado','success');
+}
+
+function saveSettings(){
+  const s=getStore();
+  s.workspaceName=document.getElementById('ws-name').value;
+  setStore(s);
+  toast('Configuración guardada','success');
+}
+
+// ==================== POLICIES ====================
+function renderPolicies(){
+  const s=getStore();
+  const c=document.getElementById('policy-list');
+  const footer=document.getElementById('footer-policy-text');
+  if(!c)return;
+  c.innerHTML=s.policies.map(p=>`
+    <div class="policy-block">
+      <div class="policy-title">
+        <span style="font-size:18px">${p.icon||'📋'}</span>
+        ${p.title}
+        ${currentUser.role==='admin'?`<button class="btn btn-danger btn-sm" style="margin-left:auto" onclick="deletePolicy('${p.id}')">Eliminar</button>`:''}
+      </div>
+      <div class="policy-text">${p.text}</div>
+    </div>
+  `).join('');
+  if(currentUser.role==='admin'){
+    document.getElementById('add-policy-section').innerHTML=`
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Agregar Nueva Política</div>
+        <div class="form-group">
+          <div class="form-label">Título</div>
+          <input class="form-input" id="new-pol-title" placeholder="Ej: Política de Privacidad">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Texto</div>
+          <textarea class="form-input" id="new-pol-text" rows="3" placeholder="Descripción de la política..." style="resize:vertical"></textarea>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Emoji / Ícono</div>
+          <input class="form-input" id="new-pol-icon" placeholder="📋" maxlength="2" style="width:80px">
+        </div>
+        <button class="btn btn-primary" onclick="addPolicy()">+ Agregar Política</button>
+      </div>`;
+  }
+  // Update footer
+  if(s.policies.length&&footer){
+    footer.textContent=s.policies.map(p=>p.text).join(' · ');
+  }
+}
+
+function addPolicy(){
+  const s=getStore();
+  const title=document.getElementById('new-pol-title').value.trim();
+  const text=document.getElementById('new-pol-text').value.trim();
+  const icon=document.getElementById('new-pol-icon').value||'📋';
+  if(!title||!text){toast('Completa título y texto','error');return;}
+  s.policies.push({id:'pol'+Date.now(),title,text,icon});
+  setStore(s);renderPolicies();
+  toast('Política agregada','success');
+}
+
+function deletePolicy(id){
+  if(!confirm('¿Eliminar esta política?'))return;
+  const s=getStore();
+  s.policies=s.policies.filter(p=>p.id!==id);
+  setStore(s);renderPolicies();
+  toast('Política eliminada','info');
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard(){
+  const s=getStore();
+  // Recent files
+  const rf=document.getElementById('recent-files-list');
+  if(rf){
+    const recent=s.files.slice(0,5);
+    if(!recent.length){rf.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Sin archivos recientes</div>';return;}
+    rf.innerHTML=`<table style="width:100%">
+      <thead><tr><th>Archivo</th><th>Subido por</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
+      <tbody>${recent.map(f=>`<tr>
+        <td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${getFileEmoji(f.name,f.type)}</span>${f.name}</div></td>
+        <td>${f.uploaderName}</td>
+        <td><span class="badge ${f.status==='terminado'?'badge-green':'badge-orange'}">${f.status==='terminado'?'✅ Terminado':'🔄 En Proceso'}</span></td>
+        <td style="color:var(--text3);font-size:12px">${formatDate(f.date)}</td>
+        <td><button class="btn btn-sm btn-secondary" onclick="downloadFile('${f.id}')">⬇</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }
+  // Dashboard projects
+  const dp=document.getElementById('dashboard-projects');
+  if(dp){
+    const projs=s.projects.slice(0,4);
+    if(!projs.length){dp.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Sin proyectos activos</div>';return;}
+    dp.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+      ${projs.map(p=>`<div style="background:var(--navy3);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:20px">${p.emoji}</span>
+          <span style="font-size:13px;font-weight:600">${p.name}</span>
+        </div>
+        <span class="badge ${p.status==='terminado'?'badge-green':'badge-orange'}">${p.status==='terminado'?'✅ Terminado':'🔄 En Proceso'}</span>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:4px;background:var(--navy2);border-radius:2px"><div style="width:${p.progress}%;height:100%;background:var(--orange);border-radius:2px"></div></div>
+          <span style="font-size:11px;color:var(--text3)">${p.progress}%</span>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+}
+
+// ==================== NOTIFICATIONS ====================
+function addNotif(text){
+  const s=getStore();
+  s.notifications.unshift({id:'n'+Date.now(),text,date:new Date().toISOString(),read:false});
+  if(s.notifications.length>50)s.notifications=s.notifications.slice(0,50);
+  setStore(s);renderNotifs();
+}
+
+function renderNotifs(){
+  const s=getStore();
+  const c=document.getElementById('notif-list');
+  if(!c)return;
+  if(!s.notifications.length){c.innerHTML='<div class="empty-state"><p style="color:var(--text3);font-size:13px">Sin notificaciones</p></div>';return;}
+  c.innerHTML=s.notifications.map(n=>`
+    <div style="display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--border);align-items:flex-start">
+      <div style="width:8px;height:8px;border-radius:50%;background:${n.read?'var(--text3)':'var(--orange)'};margin-top:5px;flex-shrink:0"></div>
+      <div>
+        <div style="font-size:13px">${n.text}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">${formatDate(n.date)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== PROFILE ====================
+function saveProfile(){
+  const s=getStore();
+  const name=document.getElementById('display-name').value.trim();
+  if(!name){toast('Ingresa un nombre','error');return;}
+  const u=s.users.find(x=>x.id===currentUser.id);
+  if(u){u.name=name;setStore(s);}
+  currentUser.name=name;
+  document.getElementById('topbar-username').textContent=name;
+  document.getElementById('user-avatar').textContent=getInitials(name);
+  document.getElementById('profile-name').textContent=name;
+  document.getElementById('welcome-name').textContent=name;
+  toast('Perfil actualizado','success');
+}
+
+// ==================== SEARCH ====================
+function globalSearch(q){
+  if(!q.trim())return;
+  const s=getStore();
+  const files=s.files.filter(f=>f.name.toLowerCase().includes(q.toLowerCase()));
+  const projs=s.projects.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
+  if(files.length>0){showPanel('files-panel',null);}
+}
+
+// ==================== UI HELPERS ====================
+function showPanel(id,navEl){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(navEl)navEl.classList.add('active');
+  if(id==='notif-panel')renderNotifs();
+  if(id==='admin-panel'&&currentUser.role!=='admin'){
+    showPanel('dashboard-panel',document.querySelector('.nav-item'));
+    toast('Solo el administrador puede acceder','error');
+    return;
+  }
+  document.getElementById('user-dropdown').classList.remove('open');
+}
+
+function toggleUserMenu(){
+  document.getElementById('user-dropdown').classList.toggle('open');
+  document.querySelectorAll('.dropdown-menu:not(#user-dropdown)').forEach(m=>m.classList.remove('open'));
+}
+
+function showModal(html){
+  document.getElementById('modal-content').innerHTML=html;
+  document.getElementById('modal-overlay').style.display='flex';
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').style.display='none';
+}
+
+function closeModalOnOverlay(e){
+  if(e.target===document.getElementById('modal-overlay'))closeModal();
+}
+
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#user-menu-btn')&&!e.target.closest('#user-dropdown')){
+    document.getElementById('user-dropdown').classList.remove('open');
+  }
+  if(!e.target.closest('.dropdown')){
+    document.querySelectorAll('.dropdown-menu:not(#user-dropdown)').forEach(m=>m.classList.remove('open'));
+  }
+});
+
+function toast(msg,type='success'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  const icons={success:'✓',error:'✗',info:'ℹ'};
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${icons[type]||'•'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='.3s';setTimeout(()=>t.remove(),300)},3000);
+}
+
+function showAdminContact(){
+  const s=getStore();
+  alert(`Contacta al administrador:\n${s.adminEmail}`);
+}
+
+// ==================== FORMATTERS ====================
+function formatSize(bytes){
+  if(bytes<1024)return bytes+'B';
+  if(bytes<1048576)return(bytes/1024).toFixed(1)+'KB';
+  if(bytes<1073741824)return(bytes/1048576).toFixed(1)+'MB';
+  return(bytes/1073741824).toFixed(1)+'GB';
+}
+
+function formatDate(iso){
+  return new Date(iso).toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function getFileExt(name){return(name.split('.').pop()||'').toUpperCase()}
+
+function getFileEmoji(name,type){
+  const ext=name.split('.').pop().toLowerCase();
+  const map={pdf:'📄',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',ppt:'📑',pptx:'📑',jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🎞',svg:'🎨',mp4:'🎬',mp3:'🎵',zip:'🗜',rar:'🗜',txt:'📃',html:'💻',css:'💻',js:'💻',py:'🐍',psd:'🎨',ai:'🎨',fig:'🎨'};
+  return map[ext]||'📁';
+}
+
+function getFileColor(type){
+  if(type.startsWith('image'))return'rgba(59,130,246,0.15)';
+  if(type.startsWith('video'))return'rgba(139,92,246,0.15)';
+  if(type.startsWith('audio'))return'rgba(16,185,129,0.15)';
+  if(type.includes('pdf'))return'rgba(239,68,68,0.15)';
+  if(type.includes('sheet')||type.includes('excel'))return'rgba(16,185,129,0.15)';
+  return'rgba(249,115,22,0.15)';
+}
+
+// ==================== INIT ====================
+initStore();
+
+// Keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();document.getElementById('share-overlay').style.display='none';}
+});
+</script>
+</body>
+</html>
