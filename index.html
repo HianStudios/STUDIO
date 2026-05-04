@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HianStudios Workspace</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://apis.google.com/js/api.js"></script>
-<script src="https://accounts.google.com/gsi/client"></script>
 <style>
 :root {
   --navy: #0a1628;
@@ -316,10 +314,10 @@ select.form-input{cursor:pointer}
       <input type="text" placeholder="Buscar archivos, proyectos..." oninput="globalSearch(this.value)" id="global-search">
     </div>
     <div class="topbar-right">
-      <div id="drive-status" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--navy3);transition:all .2s" onclick="handleDriveConnect()" title="Google Drive">
+      <div id="drive-status" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid rgba(16,185,129,0.4);background:var(--navy3)" title="Google Drive">
         <svg width="16" height="16" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg>
-        <span id="drive-status-text">Conectar Drive</span>
-        <span id="drive-dot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></span>
+        <span id="drive-status-text">Drive Conectado</span>
+        <span id="drive-dot" style="width:7px;height:7px;border-radius:50%;background:var(--success)"></span>
       </div>
       <button class="icon-btn" id="sync-btn" title="Sincronizar datos" onclick="syncAll()" style="position:relative">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -740,191 +738,19 @@ select.form-input{cursor:pointer}
 </div>
 
 <script>
-// ==================== GOOGLE DRIVE INTEGRATION ====================
-const GDRIVE_CLIENT_ID = '491184631822-4vmnofmis0jqrsukh44cuusfe5poou9a.apps.googleusercontent.com';
-const GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
-const GDRIVE_FOLDER_NAME = 'HianStudios Workspace';
-
-let driveAccessToken = null;
-let driveTokenClient = null;
-let driveFolder = null; // folder ID in Drive
-let driveReady = false;
-
-function initDriveClient() {
-  gapi.load('client', async () => {
-    await gapi.client.init({
-      discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-    });
-    driveReady = true;
-    // Restore token if saved
-    const saved = localStorage.getItem('hs_drive_token');
-    if (saved) {
-      try {
-        const tok = JSON.parse(saved);
-        if (tok.expires > Date.now()) {
-          driveAccessToken = tok.access_token;
-          gapi.client.setToken({ access_token: driveAccessToken });
-          setDriveStatus(true);
-          await ensureDriveFolder();
-        } else {
-          localStorage.removeItem('hs_drive_token');
-        }
-      } catch(e) { localStorage.removeItem('hs_drive_token'); }
-    }
-  });
-
-  driveTokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: GDRIVE_CLIENT_ID,
-    scope: GDRIVE_SCOPES,
-    callback: async (resp) => {
-      if (resp.error) { toast('Error conectando Drive: ' + resp.error, 'error'); return; }
-      driveAccessToken = resp.access_token;
-      gapi.client.setToken({ access_token: driveAccessToken });
-      // Save token with expiry
-      localStorage.setItem('hs_drive_token', JSON.stringify({
-        access_token: resp.access_token,
-        expires: Date.now() + (resp.expires_in - 60) * 1000
-      }));
-      setDriveStatus(true);
-      toast('✅ Google Drive conectado', 'success');
-      addNotif('Google Drive conectado al workspace');
-      await ensureDriveFolder();
-    }
-  });
-}
-
-function handleDriveConnect() {
-  if (driveAccessToken) {
-    if (confirm('¿Desconectar Google Drive?')) {
-      driveAccessToken = null;
-      driveFolder = null;
-      gapi.client.setToken(null);
-      localStorage.removeItem('hs_drive_token');
-      setDriveStatus(false);
-      toast('Drive desconectado', 'info');
-    }
-    return;
-  }
-  if (!driveReady) { toast('Cargando cliente Drive, intenta en un momento...', 'info'); return; }
-  driveTokenClient.requestAccessToken({ prompt: 'consent' });
-}
-
-function setDriveStatus(connected) {
-  const dot = document.getElementById('drive-dot');
-  const txt = document.getElementById('drive-status-text');
-  const box = document.getElementById('drive-status');
-  if (connected) {
-    dot.style.background = 'var(--success)';
-    txt.textContent = 'Drive Conectado';
-    box.style.borderColor = 'rgba(16,185,129,0.4)';
-  } else {
-    dot.style.background = 'var(--text3)';
-    txt.textContent = 'Conectar Drive';
-    box.style.borderColor = 'var(--border2)';
-  }
-}
-
-async function ensureDriveFolder() {
-  try {
-    // Search for existing folder
-    const res = await gapi.client.drive.files.list({
-      q: `name='${GDRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-      fields: 'files(id,name)',
-      spaces: 'drive'
-    });
-    if (res.result.files && res.result.files.length > 0) {
-      driveFolder = res.result.files[0].id;
-    } else {
-      // Create folder
-      const folder = await gapi.client.drive.files.create({
-        resource: {
-          name: GDRIVE_FOLDER_NAME,
-          mimeType: 'application/vnd.google-apps.folder'
-        },
-        fields: 'id'
-      });
-      driveFolder = folder.result.id;
-      toast('📁 Carpeta "HianStudios Workspace" creada en Drive', 'info');
-    }
-  } catch(e) {
-    console.error('Error creando carpeta Drive:', e);
-  }
-}
-
-async function uploadFileToDrive(file, fileId) {
-  if (!driveAccessToken) return null;
-  try {
-    // Show uploading indicator on card
-    const card = document.getElementById('fc-' + fileId);
-    if (card) {
-      let ind = card.querySelector('.drive-ind');
-      if (!ind) {
-        ind = document.createElement('div');
-        ind.className = 'drive-ind';
-        ind.style.cssText = 'font-size:10px;color:var(--text3);margin-top:4px;display:flex;align-items:center;gap:4px';
-        ind.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> Subiendo a Drive...';
-        card.appendChild(ind);
-      }
-    }
-
-    if (!driveFolder) await ensureDriveFolder();
-
-    const metadata = {
-      name: file.name,
-      parents: driveFolder ? [driveFolder] : []
-    };
-
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('file', file);
-
-    const resp = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + driveAccessToken },
-      body: form
-    });
-
-    if (!resp.ok) throw new Error('Upload failed: ' + resp.status);
-    const data = await resp.json();
-
-    // Update card
-    if (card) {
-      const ind = card.querySelector('.drive-ind');
-      if (ind) {
-        ind.innerHTML = '<span style="color:var(--success)">☁ En Drive</span>';
-        ind.style.color = 'var(--success)';
-      }
-    }
-
-    return { driveId: data.id, driveLink: data.webViewLink, driveDownloadLink: data.webContentLink };
-  } catch(e) {
-    console.error('Drive upload error:', e);
-    toast('⚠ Error subiendo a Drive: ' + e.message, 'error');
-    return null;
-  }
-}
-
+// ==================== DRIVE VIA APPS SCRIPT (sin auth requerida) ====================
 async function deleteFileFromDrive(driveId) {
-  if (!driveAccessToken || !driveId) return;
+  if (!driveId) return;
   try {
-    await gapi.client.drive.files.delete({ fileId: driveId });
+    const url = `${SHEETS_URL}?action=deleteFile&driveId=${encodeURIComponent(driveId)}`;
+    await fetch(url);
   } catch(e) {
     console.error('Error eliminando de Drive:', e);
   }
 }
 
-// Spin animation for upload indicator
-const spinStyle = document.createElement('style');
-spinStyle.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
-document.head.appendChild(spinStyle);
-
-window.addEventListener('load', () => {
-  if (typeof gapi !== 'undefined' && typeof google !== 'undefined') initDriveClient();
-  else setTimeout(initDriveClient, 1500);
-});
-
 // ==================== GOOGLE SHEETS CLOUD DB ====================
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxlj0BPOxNTT3Jqu3Y0O54Z4OMfgQLpo_R8S-nd_rTgTaChFW7U-kjwFP9UFbfCbqx_/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxp84MEMxaJUYxrkiE_NMyrZ-gZROpvGtkRNfZWieo1PZgQruKoLozfhDlD6hkp0XEN/exec';
 
 const DEFAULT_STORE = {
   initialized: true,
@@ -1153,27 +979,32 @@ function uploadFiles(files){
       renderFiles();
       renderDashboard();
       updateFilesCount();
-      toast(`"${file.name}" subido correctamente`,'success');
-      addNotif(`Archivo "${file.name}" subido por ${currentUser.name}`);
+      toast(`"${file.name}" subiendo a Drive...`,'info');
 
-      // Upload to Google Drive if connected
-      if(driveAccessToken){
-        const driveResult = await uploadFileToDrive(file, fileId);
-        if(driveResult){
+      // Upload to Drive via Apps Script (no auth needed)
+      try {
+        const base64 = e.target.result.split(',')[1];
+        const url = `${SHEETS_URL}?action=uploadFile&name=${encodeURIComponent(file.name)}&mimeType=${encodeURIComponent(file.type||'application/octet-stream')}&data=${encodeURIComponent(base64)}`;
+        const resp = await fetch(url);
+        const result = await resp.json();
+        if(result.ok){
           const s2=getStore();
           const f2=s2.files.find(x=>x.id===fileId);
           if(f2){
-            f2.driveId=driveResult.driveId;
-            f2.driveLink=driveResult.driveLink;
-            f2.driveDownloadLink=driveResult.driveDownloadLink;
+            f2.driveId=result.driveId;
+            f2.driveLink=result.driveLink;
+            f2.driveDownloadLink=result.driveDownloadLink;
             setStore(s2);
+            renderFiles();
           }
           toast(`☁ "${file.name}" guardado en Drive`,'success');
           addNotif(`"${file.name}" sincronizado con Google Drive`);
+        } else {
+          toast(`⚠ Error en Drive: ${result.error}`,'error');
         }
-      } else {
-        // Show hint to connect drive
-        toast(`💡 Conecta Google Drive para guardar en la nube`,'info');
+      } catch(err) {
+        toast(`⚠ Error subiendo a Drive`,'error');
+        console.error(err);
       }
     };
     reader.readAsDataURL(file);
